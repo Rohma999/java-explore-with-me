@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.yandex.main.model.Event;
+import ru.practicum.yandex.main.repository.CommentRepository;
 import ru.practicum.yandex.main.repository.RequestRepository;
 import ru.practicum.yandex.stats.client.HitClient;
 import ru.practicum.yandex.stats.dto.EndpointHitDto;
@@ -15,12 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +26,7 @@ public class StatsService {
     public static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final ObjectMapper mapper = new ObjectMapper();
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
     private final HitClient hitClient;
     @Value(value = "${app.name}")
     private String appName;
@@ -95,6 +92,20 @@ public class StatsService {
         }
 
         return eventsRequests;
+    }
+
+    public Map<Long, Long> getComments(List<Event> events) {
+        List<Long> ids = getPublished(events).stream()
+                .map(Event::getId)
+                .collect(Collectors.toList());
+        Map<Long, Long> eventsComments = new HashMap<>();
+
+        if (!ids.isEmpty()) {
+            commentRepository.getEventsComments(ids)
+                    .forEach(er -> eventsComments.put(er.getEventId(), er.getCount()));
+        }
+
+        return eventsComments;
     }
 
     private List<Event> getPublished(List<Event> events) {

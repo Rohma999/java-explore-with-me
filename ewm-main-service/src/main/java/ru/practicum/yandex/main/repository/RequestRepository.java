@@ -2,10 +2,9 @@ package ru.practicum.yandex.main.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.practicum.yandex.main.model.Event;
+import ru.practicum.yandex.main.dto.request.EventsRequests;
 import ru.practicum.yandex.main.model.EventRequestStatus;
 import ru.practicum.yandex.main.model.Request;
-import ru.practicum.yandex.main.dto.request.EventsRequests;
 
 import java.util.List;
 
@@ -18,8 +17,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByRequesterId(long requesterIid);
 
     Request findByIdAndRequesterId(long id, long requesterId);
-
-    List<Request> findByEventAndStatusIs(Event event, EventRequestStatus status);
 
     List<Request> findByEventIdAndStatusIs(long eventId, EventRequestStatus status);
 
