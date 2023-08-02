@@ -1,8 +1,9 @@
-package ru.practicum.yandex.stats.server.hits;
+package ru.practicum.yandex.stats.server.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.yandex.stats.dto.ViewStats;
+import ru.practicum.yandex.stats.server.model.EndpointHit;
 
 import java.time.LocalDateTime;
 import java.util.List;

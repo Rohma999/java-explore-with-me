@@ -1,4 +1,4 @@
-package ru.practicum.yandex.stats.server.hits;
+package ru.practicum.yandex.stats.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.yandex.stats.dto.ViewStats;
 import ru.practicum.yandex.stats.server.exception.ValidationException;
+import ru.practicum.yandex.stats.server.model.EndpointHit;
+import ru.practicum.yandex.stats.server.service.EndpointHitService;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
