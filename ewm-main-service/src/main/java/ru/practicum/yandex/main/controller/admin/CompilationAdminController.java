@@ -10,6 +10,7 @@ import ru.practicum.yandex.main.dto.complation.CompilationDto;
 import ru.practicum.yandex.main.dto.complation.NewCompilationDto;
 import ru.practicum.yandex.main.dto.complation.UpdateCompilationRequest;
 import ru.practicum.yandex.main.mapper.CompilationMapper;
+import ru.practicum.yandex.main.model.Compilation;
 import ru.practicum.yandex.main.service.CompilationService;
 
 import javax.validation.Valid;
@@ -26,9 +27,12 @@ public class CompilationAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CompilationDto addCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
-        log.info("POST /admin/compilations :{}", newCompilationDto);
-        return mapper.toCompilationDto(service.addCompilation(newCompilationDto));
+    public CompilationDto addCompilation(@RequestBody @Valid NewCompilationDto request) {
+        log.info("POST /admin/compilations : {}", request);
+        Compilation compilation = service.addCompilation(request);
+        CompilationDto response = mapper.toCompilationDto(compilation);
+        log.info("POST /admin/compilations RESPONSE : {}", response);
+        return response;
     }
 
     @DeleteMapping("/{compId}")
@@ -40,8 +44,11 @@ public class CompilationAdminController {
 
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(@PathVariable long compId,
-                                            @RequestBody @Valid UpdateCompilationRequest compilation) {
-        log.info("PATCH /admin/compilations/{} : {}", compId, compilation);
-        return mapper.toCompilationDto(service.updateCompilation(compId, compilation));
+                                            @RequestBody @Valid UpdateCompilationRequest request) {
+        log.info("PATCH /admin/compilations/{} : {}", compId, request);
+        Compilation compilation = service.updateCompilation(compId, request);
+        CompilationDto response = mapper.toCompilationDto(compilation);
+        log.info("PATCH /admin/compilations/{} RESPONSE : {}", compId, response);
+        return response;
     }
 }

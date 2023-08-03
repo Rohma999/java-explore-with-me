@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.yandex.main.dto.caregory.CategoryDto;
 import ru.practicum.yandex.main.dto.caregory.NewCategoryDto;
 import ru.practicum.yandex.main.mapper.CategoryMapper;
+import ru.practicum.yandex.main.model.Category;
 import ru.practicum.yandex.main.service.CategoryService;
 
 import javax.validation.Valid;
@@ -24,16 +25,22 @@ public class CategoryAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto addCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
-        log.info("POST /admin/categories :{}", newCategoryDto);
-        return mapper.toCategoryDto(service.addCategory(mapper.toCategory(newCategoryDto)));
+    public CategoryDto addCategory(@RequestBody @Valid NewCategoryDto request) {
+        log.info("POST /admin/categories :{}", request);
+        Category category = service.addCategory(mapper.toCategory(request));
+        CategoryDto response = mapper.toCategoryDto(category);
+        log.info("POST /admin/categories RESPONSE : {}", response);
+        return response;
     }
 
     @PatchMapping("/{catId}")
-    public CategoryDto updateCategory(@RequestBody @Valid NewCategoryDto newCategoryDto,
+    public CategoryDto updateCategory(@RequestBody @Valid NewCategoryDto request,
                                       @PathVariable long catId) {
-        log.info("PATCH /admin/categories/{} : {}", catId, newCategoryDto);
-        return mapper.toCategoryDto(service.updateCategory(mapper.toCategory(newCategoryDto), catId));
+        log.info("PATCH /admin/categories/{} : {}", catId, request);
+        Category category = service.updateCategory(mapper.toCategory(request), catId);
+        CategoryDto response = mapper.toCategoryDto(category);
+        log.info("PATCH /admin/categories/{} RESPONSE : {}", catId, response);
+        return response;
     }
 
     @DeleteMapping("/{catId}")

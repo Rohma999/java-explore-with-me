@@ -1,6 +1,7 @@
 package ru.practicum.yandex.stats.server.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping
@@ -31,8 +33,11 @@ public class EndpointHitController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public EndpointHit addEndpointHit(@RequestBody EndpointHit endpointHit) {
-        return service.addEndpointHit(endpointHit);
+    public EndpointHit addEndpointHit(@RequestBody EndpointHit request) {
+        log.info("POST /hit : {}", request);
+        EndpointHit response = service.addEndpointHit(request);
+        log.info("POST /hit RESPONSE : {}", response);
+        return response;
     }
 
     @GetMapping("/stats")
@@ -43,6 +48,9 @@ public class EndpointHitController {
         if (LocalDateTime.parse(start, DATE).isAfter(LocalDateTime.parse(end, DATE))) {
             throw new ValidationException("Start after end");
         }
-        return service.getStats(uris, start, end, unique);
+        log.info("GET /stats?start={}&end={}&uris={}&unique={}", start, end, uris, unique);
+        List<ViewStats> response = service.getStats(uris, start, end, unique);
+        log.info("GET /stats RESPONSE : {}", response);
+        return response;
     }
 }

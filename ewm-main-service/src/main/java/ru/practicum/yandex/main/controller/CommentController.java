@@ -9,6 +9,7 @@ import ru.practicum.yandex.main.dto.comment.CommentDto;
 import ru.practicum.yandex.main.dto.comment.NewCommentDto;
 import ru.practicum.yandex.main.dto.comment.UpdateCommentRequest;
 import ru.practicum.yandex.main.mapper.CommentMapper;
+import ru.practicum.yandex.main.model.Comment;
 import ru.practicum.yandex.main.service.CommentService;
 
 import javax.validation.Valid;
@@ -31,15 +32,21 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto addComment(@PathVariable long userId,
                                  @PathVariable long eventId,
-                                 @RequestBody @Valid NewCommentDto comment) {
-        log.info("POST /users/{}/events/{}/comments : {}", userId, eventId, comment);
-        return mapper.toCommentDto(service.addComment(userId, eventId, mapper.toComment(comment)));
+                                 @RequestBody @Valid NewCommentDto request) {
+        log.info("POST /users/{}/events/{}/comments : {}", userId, eventId, request);
+        Comment comment = service.addComment(userId, eventId, mapper.toComment(request));
+        CommentDto response = mapper.toCommentDto(comment);
+        log.info("POST /users/{}/events/{}/comments RESPONSE : {}", userId, eventId, response);
+        return response;
     }
 
     @GetMapping("/comments/{commentId}")
     public CommentDto getCommentById(@PathVariable long commentId) {
         log.info("GET /comments/{}", commentId);
-        return mapper.toCommentDto(service.getCommentById(commentId));
+        Comment comment = service.getCommentById(commentId);
+        CommentDto response = mapper.toCommentDto(comment);
+        log.info("GET /comments/{} RESPONSE : {}", commentId,response);
+        return response;
     }
 
     @PatchMapping("/users/{userId}/events/{eventId}/comments/{commentId}")
@@ -48,7 +55,10 @@ public class CommentController {
                                     @PathVariable long eventId,
                                     @RequestBody @Valid UpdateCommentRequest request) {
         log.info("PATCH /users/{}/events/{}/comments/{} : {}", userId, eventId, commentId, request);
-        return mapper.toCommentDto(service.updateComment(commentId, userId, eventId, request));
+        Comment comment = service.updateComment(commentId, userId, eventId, request);
+        CommentDto response = mapper.toCommentDto(comment);
+        log.info("PATCH /users/{}/events/{}/comments/{} RESPONSE: {}", userId, eventId, commentId, response);
+        return response;
     }
 
     @DeleteMapping("/users/{userId}/events/{eventId}/comments/{commentId}")
@@ -65,9 +75,11 @@ public class CommentController {
                                                     @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                     @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("GET /events/comments/{}?from={}&size={}", eventId, from, size);
-        return service.getAllCommentsByEventId(eventId, from, size).stream()
+        List<CommentDto> response = service.getAllCommentsByEventId(eventId, from, size).stream()
                 .map(mapper::toCommentDto)
                 .collect(Collectors.toList());
+        log.info("GET /events/comments/{} RESPONSE : {}", eventId, response);
+        return response;
     }
 
     @GetMapping("/users/comments/{userId}")
@@ -75,9 +87,11 @@ public class CommentController {
                                                      @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                      @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("GET /users/comments/{}?from={}&size={}", userId, from, size);
-        return service.getAllCommentsByAuthorId(userId, from, size).stream()
+        List<CommentDto> response =  service.getAllCommentsByAuthorId(userId, from, size).stream()
                 .map(mapper::toCommentDto)
                 .collect(Collectors.toList());
+        log.info("GET /users/comments/{} : {}", userId, response);
+        return response;
     }
 
     @GetMapping("/comments")
@@ -85,17 +99,21 @@ public class CommentController {
                                                  @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                  @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("GET /comments?from={}&size={} : {}", from, size, text);
-        return service.getCommentsByText(text, from, size).stream()
+        List<CommentDto> response = service.getCommentsByText(text, from, size).stream()
                 .map(mapper::toCommentDto)
                 .collect(Collectors.toList());
+        log.info("GET /comments?text={} RESPONSE : {}", text,response);
+        return response;
     }
 
     @GetMapping("/comments/all")
     public List<CommentDto> getAllComments(@PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                            @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("GET /comments/all?from={}&size={}", from, size);
-        return service.getAllComments(from, size).stream()
+        List<CommentDto> response = service.getAllComments(from, size).stream()
                 .map(mapper::toCommentDto)
                 .collect(Collectors.toList());
+        log.info("GET /comments/all RESPONSE : {}", response);
+        return response;
     }
 }
