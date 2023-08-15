@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.yandex.main.dto.event.EventFullDto;
 import ru.practicum.yandex.main.dto.event.UpdateEventRequest;
 import ru.practicum.yandex.main.mapper.EventMapper;
+import ru.practicum.yandex.main.model.Event;
 import ru.practicum.yandex.main.model.EventState;
 import ru.practicum.yandex.main.service.EventService;
 
@@ -41,15 +42,21 @@ public class EventAdminController {
                                            @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("GET /admin/events users={},states={},categories={},rangeStart={},rangeEnd={},from={},size={}",
                 users, states, categories, rangeStart, rangeEnd, from, size);
-        return service.getAllEvents(users, states, categories, rangeStart, rangeEnd, from, size).stream()
+        List<EventFullDto> response = service.getAllEvents(users, states, categories, rangeStart, rangeEnd, from, size)
+                .stream()
                 .map(mapper::toEventFullDto)
                 .collect(Collectors.toList());
+        log.info("GET /admin/events RESPONSE : {}", response);
+        return response;
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventAdmin(@PathVariable long eventId,
-                                         @RequestBody @Valid UpdateEventRequest event) {
-        log.info("PATCH /admin/events/{} : {}", eventId, event);
-        return mapper.toEventFullDto(service.updateEventAdmin(eventId, event));
+                                         @RequestBody @Valid UpdateEventRequest request) {
+        log.info("PATCH /admin/events/{} : {}", eventId, request);
+        Event event = service.updateEventAdmin(eventId, request);
+        EventFullDto response = mapper.toEventFullDto(event);
+        log.info("PATCH /admin/events/{} RESPONSE : {}", eventId, response);
+        return response;
     }
 }

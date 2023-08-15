@@ -16,6 +16,7 @@ import ru.practicum.yandex.main.mapper.RequestMapper;
 import ru.practicum.yandex.main.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.yandex.main.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.yandex.main.dto.request.ParticipationRequestDto;
+import ru.practicum.yandex.main.model.Request;
 import ru.practicum.yandex.main.service.RequestService;
 
 import java.util.List;
@@ -34,24 +35,31 @@ public class RequestController {
     public List<ParticipationRequestDto> getRequestsByUserIdAndEventIdPrivate(@PathVariable long userId,
                                                                               @PathVariable long eventId) {
         log.info("GET /users/{}/events/{}/requests", userId, eventId);
-        return service.findByRequesterIdAndEventId(userId, eventId).stream()
+        List<ParticipationRequestDto> response = service.findByRequesterIdAndEventId(userId, eventId).stream()
                 .map(mapper::toRequestDto)
                 .collect(Collectors.toList());
+        log.info("GET /users/{}/events/{}/requests RESPONSE : {}", userId, eventId, response);
+        return response;
     }
 
     @PatchMapping("/users/{userId}/events/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestsPrivate(@PathVariable long userId,
                                                                 @PathVariable long eventId,
                                                                 @RequestBody EventRequestStatusUpdateRequest request) {
-        return service.updateRequests(userId, eventId, request);
+        log.info("PATCH /users/{}/events/{}/requests : {}", userId, eventId, request);
+        EventRequestStatusUpdateResult response = service.updateRequests(userId, eventId, request);
+        log.info("PATCH /users/{}/events/{}/requests RESPONSE : {}", userId, eventId, response);
+        return response;
     }
 
     @GetMapping("/users/{userId}/requests")
     public List<ParticipationRequestDto> getRequestsByUserId(@PathVariable long userId) {
         log.info("GET /users/{}/requests", userId);
-        return service.findByRequesterId(userId).stream()
+        List<ParticipationRequestDto> response = service.findByRequesterId(userId).stream()
                 .map(mapper::toRequestDto)
                 .collect(Collectors.toList());
+        log.info("GET /users/{}/requests RESPONSE : {}", userId, response);
+        return response;
     }
 
     @PostMapping("/users/{userId}/requests")
@@ -59,13 +67,19 @@ public class RequestController {
     public ParticipationRequestDto addRequest(@PathVariable long userId,
                                               @RequestParam long eventId) {
         log.info("POST /users/{}/requests?eventId={}", userId, eventId);
-        return mapper.toRequestDto(service.addRequest(userId, eventId));
+        Request request = service.addRequest(userId, eventId);
+        ParticipationRequestDto response = mapper.toRequestDto(request);
+        log.info("POST /users/{}/requests?eventId={} RESPONSE : {}", userId, eventId, response);
+        return response;
     }
 
     @PatchMapping("/users/{userId}/requests/{requestId}/cancel")
     public ParticipationRequestDto cancelRequest(@PathVariable long userId,
                                                  @PathVariable long requestId) {
-        log.info("PATH /users/{}/requests/{}/cancel", userId, requestId);
-        return mapper.toRequestDto(service.cancelRequest(requestId, userId));
+        log.info("PATCH /users/{}/requests/{}/cancel", userId, requestId);
+        Request request = service.cancelRequest(requestId, userId);
+        ParticipationRequestDto response = mapper.toRequestDto(request);
+        log.info("PATCH /users/{}/requests/{}/cancel RESPONSE : {}", userId, requestId, response);
+        return response;
     }
 }
